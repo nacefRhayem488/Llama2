@@ -52,7 +52,7 @@ logging_steps = 25
 # SFT parameters
 max_seq_length = None
 packing = False
-device_map = {"cpu": 1}
+device_map = {"cuda": 0}
 
 st.title("Fine-Tune Llama 2 Model")
 st.write("Training the model...")
