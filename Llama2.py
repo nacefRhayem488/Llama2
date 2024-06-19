@@ -14,28 +14,7 @@ Original file is located at
 This notebook runs on a T4 GPU. (Last update: 24 Aug 2023)
 """
 
-from google.colab import drive
-drive.mount('/content/drive')
 
-!apt-get install git
-
-!git config --global user.email "bachbech20@gmail.com"
-!git config --global user.name "bachbech"
-
-!git clone https://github.com/bachbech/Llama2.git
-
-!cp "/content/drive/MyDrive/Colab Notebooks/Copy of Fine-tune Llama 2 in Google Colab.ipynb" /content/Llama2/
-
-# Commented out IPython magic to ensure Python compatibility.
-# %cd /content/Llama2
-
-!git add "Copy of Fine-tune Llama 2 in Google Colab.ipynb"
-
-# Commit the changes
-!git commit -m "Add notebook"
-
-# Push the changes to GitHub
-!git push origin main
 
 !pip install -q accelerate==0.21.0 peft==0.4.0 bitsandbytes==0.40.2 transformers==4.31.0 trl==0.4.7
 
