@@ -19,13 +19,15 @@ routers/             # API route definitions
 ### Attendance & Late Arrival Tracking
 
 Service: still_absent() & current_late()
-    ####Purpose:
+
+
+    .Purpose:
 
         -Detects employees who are absent (did not check in at all).
 
        -Identifies employees who are late (checked in after their       scheduled start time + grace period).
 
-    ####Implementation:
+    .Implementation:
 
         -Queries Workhours table for scheduled shifts.
 
@@ -39,6 +41,7 @@ Service: still_absent() & current_late()
 ### Lunch Break Monitoring
 
 Service: get_exceeded_lunch_times_realtime() & get_missed_lunch()
+
     .Purpose:
 
         -Detects employees who exceeded their allowed lunch duration.
@@ -58,6 +61,7 @@ Service: get_exceeded_lunch_times_realtime() & get_missed_lunch()
 ### Early Logout Detection
 
 Service: get_the_logout_time()
+
     .Purpose:
 
         -Detects employees who logged out before their scheduled shift end.
@@ -71,6 +75,7 @@ Service: get_the_logout_time()
 ### Skill/Task Compliance Check
 
 Service: get_skills_change()
+
     .Purpose:
 
         -Detects if employees performed tasks different from their scheduled assignments.
@@ -82,6 +87,7 @@ Service: get_skills_change()
 ### Notification Management
 
 Service: store_notification(), get_notifications(), mark_notifications_as_viewed()
+
     .Purpose:
 
         -Stores, retrieves, and manages notifications with deduplication.
