@@ -1,157 +1,143 @@
-# Notifications Management System
+📢 Notifications Management System
+This microservice provides a comprehensive notification system for tracking employee attendance, work hours, and activities. It monitors various statuses including late arrivals, absences, lunch breaks, skill changes, and early logouts, generating real-time notifications for managers and team leaders.
 
-This microservice provides a comprehensive notification system for tracking employee attendance, work hours, and activities. It monitors various employee statuses including late arrivals, absences, lunch breaks, skill changes, and early logouts, generating appropriate notifications for managers and team leaders.
-
-
-##project structure
-.env
-.gitignore
-database.py          # Database configuration and connection
-main.py              # Entry point for the FastAPI application
-models.py            # Database models
-requirements.txt     # Project dependencies
-schemas.py           # Pydantic schemas for request/response validation
-services.py          # Business logic and service layer
-routers/             # API route definitions
-## Core Functionalities
-
-
-### Attendance & Late Arrival Tracking
-
+🏗️ Project Structure
+bash
+Copier
+Modifier
+.env                    # Environment variables
+.gitignore              # Ignored files for Git
+database.py             # Database configuration and connection
+main.py                 # Entry point for the FastAPI application
+models.py               # SQLAlchemy models
+requirements.txt        # Project dependencies
+schemas.py              # Pydantic schemas for validation
+services.py             # Business logic and service layer
+routers/                # API route definitions
+⚙️ Core Functionalities
+📅 Attendance & Late Arrival Tracking
 Service: still_absent() & current_late()
 
+Purpose:
 
-    .Purpose:
+Detect employees who are absent (no check-in).
 
-        -Detects employees who are absent (did not check in at all).
+Identify employees who are late (checked in after scheduled time + grace period).
 
-       -Identifies employees who are late (checked in after their       scheduled start time + grace period).
+Implementation:
 
-    .Implementation:
+Query the Workhours table for schedules.
 
-        -Queries Workhours table for scheduled shifts.
+Compare against StatusChange records (Working/Coaching/Training/Lunch).
 
-        -Compares against StatusChange records (Working/Coaching/Training/Lunch).
+No status ➔ Mark as absent.
 
-        -If no status is found, marks as absent.
+Status after grace period ➔ Mark as late.
 
-        -If status is recorded after the scheduled time + 5-minute grace period, marks as late.
-
-
-### Lunch Break Monitoring
-
+🍽️ Lunch Break Monitoring
 Service: get_exceeded_lunch_times_realtime() & get_missed_lunch()
 
-    .Purpose:
+Purpose:
 
-        -Detects employees who exceeded their allowed lunch duration.
+Detect employees exceeding lunch time.
 
-        +Identifies employees who missed their scheduled lunch break.
+Identify employees who missed their lunch.
 
-    .Implementation:
+Implementation:
 
-        -Checks Workhours for scheduled lunch times.
+Compare Workhours scheduled lunch vs. StatusChange lunch duration.
 
-        -Compares against StatusChange (Lunch status duration).
+Excess ➔ Flagged as exceeded.
 
-        -If lunch duration exceeds configured limits, flags as exceeded.
+No lunch ➔ Flagged as missed.
 
-        -If no lunch status is recorded, flags as missed.
-
-### Early Logout Detection
-
+🚪 Early Logout Detection
 Service: get_the_logout_time()
 
-    .Purpose:
+Purpose:
 
-        -Detects employees who logged out before their scheduled shift end.
+Detect employees who logout before scheduled end time.
 
-    .Implementation:
+Implementation:
 
-        -Compares Workhours.fin (scheduled end time) against the last StatusChange.end_time.
+Compare Workhours.fin (end time) vs. last StatusChange.end_time.
 
-        -If logout is 5+ minutes early, flags it.
+Early logout (≥ 5 minutes) ➔ Flagged.
 
-### Skill/Task Compliance Check
-
+🛠️ Skill/Task Compliance Check
 Service: get_skills_change()
 
-    .Purpose:
+Purpose:
 
-        -Detects if employees performed tasks different from their scheduled assignments.
+Detect if employees performed tasks different from scheduled.
 
-    .Implementation:
+Implementation:
 
-        -Compares Workhours.skill (planned task) vs. Traitement.skill (actual task).
+Compare Workhours.skill (planned) vs. Traitement.skill (actual).
 
-### Notification Management
-
+🔔 Notification Management
 Service: store_notification(), get_notifications(), mark_notifications_as_viewed()
 
-    .Purpose:
+Purpose:
 
-        -Stores, retrieves, and manages notifications with deduplication.
+Store, retrieve, and manage notifications with deduplication.
 
-    .Implementation:
+Implementation:
 
-        -Deduplication: Prevents duplicate alerts for the same event within a time window.
+Deduplication to prevent redundant alerts.
 
-        -Role-based filtering:
+Role-based filtering:
 
-            Managers/Superusers see all notifications.
+Managers/Superusers ➔ All notifications.
 
-            Team Leaders (CL) only see notifications for their assigned activity.
+Team Leaders (CL) ➔ Assigned activity only.
 
-        -Mark as viewed: Updates Notifications.viewed status.
+Mark notifications as viewed.
 
-## API Endpoints
+🚀 API Endpoints
 
-Endpoint	               |  Method	   |Description
-/get-late-employees	       |  GET	Lists late employees.
-/still_absent	           |  GET	Lists absent employees.
-/get-exceeded-lunch-times  |  GET	employees who exceeded lunch time.
-/logout_early	           |  GET	Lists employees who logged out early.
-/skills_change	           |  GET	Lists employees with task mismatches.
-/missed_lunch	           |  GET	Lists employees who missed lunch.
-/notifications	           |  GET	Retrieves notifications (role-based).
-/mark-notifications-viewed |  POST	Marks notifications as read.
-/store_notifications	   |  POST	Stores a new notification.
+Endpoint	Method	Description
+/get-late-employees	GET	List late employees.
+/still_absent	GET	List absent employees.
+/get-exceeded-lunch-times	GET	List employees who exceeded lunch time.
+/logout_early	GET	List employees who logged out early.
+/skills_change	GET	List employees with task mismatches.
+/missed_lunch	GET	List employees who missed lunch.
+/notifications	GET	Retrieve notifications (role-based access).
+/mark-notifications-viewed	POST	Mark notifications as read.
+/store_notifications	POST	Store a new notification.
+🧩 Technical Implementation Details
+🌍 Timezone Handling
+Use UTC for storage.
 
+Convert to Africa/Tunis (UTC+1) for display.
 
-## Technical Implementation Details
+Grace periods (e.g., 5-minute late allowance) are timezone-aware.
 
-### Timezone Handling
+🛡️ Deduplication Logic
+Prevents duplicate notifications within a time window (default 24h) if:
 
--Uses UTC for storage.
+Same text.
 
--Converts to Africa/Tunis (UTC+1) for display.
+Same shift ID (id_shift).
 
--Grace periods (e.g., 5-minute late allowance) are timezone-aware.
+Within last configurable hours.
 
-### Deduplication Logic
-Checks for existing notifications with:
+👥 Role-Based Access Control
+Superusers/Managers: View all notifications.
 
-    -Same text
+Team Leaders (CL): View notifications related to their activities.
 
-    -Same shift ID (id_shift)
+Employees: No access to notifications.
 
-    -Within the last 24 hours (configurable)
+🔄 API Flow
+Employee schedules loaded from Workhours.
 
-### Role-Based Access Control
--Superusers/Managers: See all notifications.
+Real-time checks vs. StatusChange.
 
--Team Leaders (CL): Only see notifications for their current_activity.
+Notifications generated for any discrepancies.
 
--Regular Employees: Cannot view notifications.
+Managers retrieve alerts via /notifications.
 
-## The api flow 
+Notifications marked as viewed when acknowledged.
 
--Employee schedules are loaded from Workhours.
-
--Real-time checks compare schedules against StatusChange.
-
--Notifications are generated for discrepancies.
-
--Managers retrieve alerts via /notifications.
-
--Notifications are marked as viewed when acknowledged.
