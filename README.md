@@ -6,15 +6,15 @@ This microservice provides a comprehensive notification system for **tracking em
 
 ## 🏗️ Project Structure
 
-.env                    # Environment variables
-.gitignore              # Ignored files for Git
-database.py             # Database configuration and connection
-main.py                 # Entry point for the FastAPI application
-models.py               # SQLAlchemy models
-requirements.txt        # Project dependencies
-schemas.py              # Pydantic schemas for validation
-services.py             # Business logic and service layer
-routers/                # API route definitions
+- **.env** — Environment variables
+- **.gitignore** — Git ignored files
+- **database.py** — Database configuration and connection
+- **main.py** — Entry point for the FastAPI application
+- **models.py** — SQLAlchemy models
+- **requirements.txt** — Project dependencies
+- **schemas.py** — Pydantic schemas for validation
+- **services.py** — Business logic and service layer
+- **routers/** — API route definitions
 
 
 ---
