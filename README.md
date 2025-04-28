@@ -19,13 +19,13 @@ routers/             # API route definitions
 ### Attendance & Late Arrival Tracking
 
 Service: still_absent() & current_late()
-    .Purpose:
+    ####Purpose:
 
         -Detects employees who are absent (did not check in at all).
 
        -Identifies employees who are late (checked in after their       scheduled start time + grace period).
 
-    .Implementation:
+    ####Implementation:
 
         -Queries Workhours table for scheduled shifts.
 
